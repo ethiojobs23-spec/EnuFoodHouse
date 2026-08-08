@@ -1,16 +1,20 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 import MobileBottomNav from './components/layout/MobileBottomNav.vue'
 import TopHeader from './components/layout/TopHeader.vue'
+
+const route = useRoute()
+const isLoginRoute = computed(() => route.path === '/login')
 </script>
 
 <template>
   <div class="app-container">
-    <TopHeader />
-    <main class="main-content">
+    <TopHeader v-if="!isLoginRoute" />
+    <main class="main-content" :class="{ 'no-padding': isLoginRoute }">
       <RouterView />
     </main>
-    <MobileBottomNav />
+    <MobileBottomNav v-if="!isLoginRoute" />
   </div>
 </template>
 
@@ -37,5 +41,9 @@ body, html {
   overflow-y: auto;
   padding: 16px;
   padding-bottom: 80px; /* Space for bottom nav */
+}
+.main-content.no-padding {
+  padding: 0;
+  padding-bottom: 0;
 }
 </style>

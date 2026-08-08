@@ -26,17 +26,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import BottomSheetDrawer from '../components/ui/BottomSheetDrawer.vue';
 import CustomNumpad from '../components/ui/CustomNumpad.vue';
+import { supabase } from '../services/supabase';
 
 const isDrawerOpen = ref(false);
 const selectedItem = ref(null);
 
-const inventoryItems = ref([
-  { id: 1, name: 'Tomato Paste', price_point: 15.50 },
-  { id: 2, name: 'Cooking Oil (5L)', price_point: 45.00 }
-]);
+const inventoryItems = ref([]);
+
+const fetchInventory = async () => {
+  const { data, error } = await supabase.from('inventory_items').select('*');
+  if (error) {
+    console.error("Error fetching inventory:", error);
+  } else {
+    inventoryItems.value = data;
+  }
+};
+
+onMounted(() => {
+  fetchInventory();
+});
 
 const openNumpad = (item) => {
   selectedItem.value = item;
@@ -46,7 +57,19 @@ const openNumpad = (item) => {
 const handleTransactionSave = async (quantity) => {
   console.log(`Saving ${quantity} of ${selectedItem.value.name}`);
   
-  // TODO: Call Supabase to insert into public.inventory_transactions
+  const { error } = await supabase.from('inventory_transactions').insert({
+    item_id: selectedItem.value.id,
+    quantity: quantity,
+    price_point: selectedItem.value.price_point,
+    transaction_type: 'OUT' // assuming usage
+  });
+
+  if (error) {
+    console.error("Error saving transaction:", error);
+    alert('Failed to save transaction');
+  } else {
+    alert(`Successfully recorded ${quantity} of ${selectedItem.value.name}`);
+  }
   
   isDrawerOpen.value = false;
   selectedItem.value = null;
