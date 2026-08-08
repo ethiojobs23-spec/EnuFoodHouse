@@ -1,39 +1,45 @@
 <template>
-  <div class="expense-container">
-    <h2>Record Expense</h2>
+  <div class="expense-wrapper">
+    <div class="header-section">
+      <h2>Register Expense</h2>
+      <p class="subtitle">Log operational costs</p>
+    </div>
     
-    <div class="form-group">
-      <label>Description</label>
-      <input v-model="expense.description" type="text" placeholder="e.g. Electricity Bill" class="modern-input" />
-    </div>
-
-    <div class="form-group">
-      <label>Category</label>
-      <select v-model="expense.category" class="modern-input">
-        <option disabled value="">Select Category</option>
-        <option>Utilities</option>
-        <option>Maintenance</option>
-        <option>Salary</option>
-        <option>Miscellaneous</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Amount</label>
-      <!-- VIRTUAL INPUT: Opens the numpad drawer without triggering native keyboard -->
-      <div class="virtual-input" @click="isDrawerOpen = true">
-        <span v-if="expense.amount">${{ expense.amount.toFixed(2) }}</span>
-        <span v-else class="placeholder">Tap to enter amount</span>
+    <div class="form-container">
+      <div class="input-group">
+        <label>Description</label>
+        <input v-model="expense.description" type="text" placeholder="e.g. Electricity Bill" class="sleek-input" />
       </div>
-    </div>
 
-    <button class="save-btn" :disabled="!isValid" @click="saveExpense">Submit Expense</button>
+      <div class="input-group">
+        <label>Category</label>
+        <div class="select-wrapper">
+          <select v-model="expense.category" class="sleek-input">
+            <option disabled value="">Select Category</option>
+            <option>Utilities</option>
+            <option>Maintenance</option>
+            <option>Salary</option>
+            <option>Miscellaneous</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Total Amount</label>
+        <div class="virtual-input" @click="isDrawerOpen = true" :class="{'has-value': expense.amount}">
+          <span v-if="expense.amount" class="currency">ETB</span>
+          <span v-if="expense.amount" class="value">{{ expense.amount.toFixed(2) }}</span>
+          <span v-else class="placeholder">Tap to enter amount</span>
+        </div>
+      </div>
+
+      <button class="action-btn" :disabled="!isValid" @click="saveExpense">
+        Submit Expense
+      </button>
+    </div>
 
     <BottomSheetDrawer v-model:isOpen="isDrawerOpen">
-      <CustomNumpad 
-        item-name="Expense Amount" 
-        @save="handleAmountSave" 
-      />
+      <CustomNumpad item-name="Expense Amount" @save="handleAmountSave" />
     </BottomSheetDrawer>
   </div>
 </template>
@@ -45,15 +51,9 @@ import CustomNumpad from '../components/ui/CustomNumpad.vue';
 import { supabase } from '../services/supabase';
 
 const isDrawerOpen = ref(false);
-const expense = ref({
-  description: '',
-  category: '',
-  amount: null
-});
+const expense = ref({ description: '', category: '', amount: null });
 
-const isValid = computed(() => {
-  return expense.value.description && expense.value.category && expense.value.amount;
-});
+const isValid = computed(() => expense.value.description && expense.value.category && expense.value.amount);
 
 const handleAmountSave = (amount) => {
   expense.value.amount = amount;
@@ -61,90 +61,135 @@ const handleAmountSave = (amount) => {
 };
 
 const saveExpense = async () => {
-  console.log('Saving Expense:', expense.value);
-  
   const { error } = await supabase.from('expenses').insert({
     description: expense.value.description,
     category: expense.value.category,
     amount: expense.value.amount
   });
-
-  if (error) {
-    console.error("Error saving expense:", error);
-    alert('Failed to save expense');
-  } else {
-    alert(`Expense of $${expense.value.amount} for ${expense.value.category} saved!`);
+  if (!error) {
+    alert(`Expense of ETB ${expense.value.amount} saved!`);
     expense.value = { description: '', category: '', amount: null };
   }
 };
 </script>
 
 <style scoped>
-.expense-container {
-  padding: 10px 0 20px 0;
-  max-width: 600px;
-  margin: 0 auto;
+.header-section {
+  margin-bottom: 32px;
 }
 h2 {
-  font-size: 1.5rem;
-  color: #111827;
-  margin-top: 0;
-  margin-bottom: 24px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #111;
+  margin: 0 0 4px 0;
 }
-.form-group {
-  margin-bottom: 20px;
+.subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 label {
-  display: block;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #4b5563;
-  margin-bottom: 8px;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-.modern-input, .virtual-input {
+.sleek-input {
   width: 100%;
-  padding: 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
   font-size: 1rem;
-  background-color: #f9fafb;
-  box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #111;
   font-family: inherit;
+  transition: all 0.2s;
+  appearance: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
-.modern-input:focus {
+.sleek-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background-color: #ffffff;
+  border-color: #111;
+  box-shadow: 0 0 0 4px rgba(17,17,17,0.05);
+}
+.select-wrapper {
+  position: relative;
+}
+.select-wrapper::after {
+  content: "▼";
+  font-size: 10px;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #868e96;
+  pointer-events: none;
 }
 .virtual-input {
-  cursor: pointer;
+  width: 100%;
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  min-height: 54px;
   display: flex;
   align-items: center;
-  min-height: 52px;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  transition: all 0.2s;
+}
+.virtual-input:active {
+  transform: scale(0.99);
+  background: #fafafa;
+}
+.virtual-input.has-value {
+  border-color: #111;
 }
 .placeholder {
-  color: #9ca3af;
+  color: #adb5bd;
 }
-.save-btn {
+.currency {
+  font-weight: 600;
+  color: #868e96;
+  font-size: 0.9rem;
+}
+.value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111;
+}
+.action-btn {
   width: 100%;
-  padding: 16px;
-  background-color: #10b981;
+  padding: 18px;
+  background: #111;
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.2s;
+  margin-top: 16px;
+  transition: all 0.2s;
 }
-.save-btn:disabled {
-  background-color: #9ca3af;
+.action-btn:disabled {
+  background: #e9ecef;
+  color: #adb5bd;
   cursor: not-allowed;
 }
-.save-btn:not(:disabled):active {
-  background-color: #059669;
+.action-btn:not(:disabled):active {
+  transform: scale(0.98);
 }
 </style>

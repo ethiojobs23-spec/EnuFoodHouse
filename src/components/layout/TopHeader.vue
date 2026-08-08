@@ -1,9 +1,11 @@
 <template>
   <header class="top-header">
-    <h1>Enu Food House</h1>
+    <div class="logo">Enu.</div>
     <div class="user-profile">
-      <span class="user-name">Admin</span>
-      <button class="logout-btn" @click="handleLogout">Logout</button>
+      <div class="avatar">A</div>
+      <button class="logout-btn" @click="handleLogout">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
     </div>
   </header>
 </template>
@@ -22,36 +24,56 @@ const handleLogout = async () => {
 
 <style scoped>
 .top-header {
-  height: 60px;
-  background: white;
-  border-bottom: 1px solid #eaeaea;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 16px;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
-h1 {
-  font-size: 18px;
-  margin: 0;
-  color: #333;
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #111;
 }
 .user-profile {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
-.user-name {
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #111;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
   font-size: 14px;
-  color: #666;
 }
 .logout-btn {
-  background-color: #f3f4f6;
+  background: none;
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  color: #ef4444;
+  color: #666;
+  padding: 8px;
   cursor: pointer;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.logout-btn:active {
+  background: #f1f3f5;
+  color: #ef4444;
 }
 </style>

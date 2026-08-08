@@ -19,12 +19,17 @@ const isLoginRoute = computed(() => route.path === '/login')
 </template>
 
 <style>
-/* Reset basic styles for mobile */
+/* Reset and Premium Typography */
 body, html {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #f9fafb;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: #f7f9fc;
+  color: #1a1d20;
+  -webkit-font-smoothing: antialiased;
+}
+* {
+  box-sizing: border-box;
 }
 </style>
 
@@ -34,16 +39,14 @@ body, html {
   flex-direction: column;
   height: 100vh;
   width: 100vw;
+  background-color: #f7f9fc;
 }
-
 .main-content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
-  padding-bottom: 80px; /* Space for bottom nav */
+  padding: 24px 20px 100px 20px;
 }
 .main-content.no-padding {
   padding: 0;
-  padding-bottom: 0;
 }
 </style>
