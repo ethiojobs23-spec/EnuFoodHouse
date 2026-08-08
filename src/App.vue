@@ -24,7 +24,7 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: 'Inter', -apple-system, sans-serif;
-  background-color: #f7f9fc;
+  background-color: #e9ecef; /* Dark background on desktop to frame the app */
   color: #1a1d20;
   -webkit-font-smoothing: antialiased;
 }
@@ -38,13 +38,18 @@ body, html {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   background-color: #f7f9fc;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 .main-content {
   flex: 1;
   overflow-y: auto;
-  padding: 24px 20px 100px 20px;
+  padding: 94px 20px 100px 20px;
 }
 .main-content.no-padding {
   padding: 0;

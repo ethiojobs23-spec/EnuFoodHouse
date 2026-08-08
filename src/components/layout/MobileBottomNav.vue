@@ -21,6 +21,8 @@
   bottom: 0;
   left: 0;
   right: 0;
+  max-width: 420px;
+  margin: 0 auto;
   height: 80px;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);

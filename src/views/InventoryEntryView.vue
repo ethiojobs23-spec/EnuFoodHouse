@@ -297,6 +297,19 @@ h2 {
 }
 
 /* Manage Screen Styles */
+.manage-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 420px;
+  margin: 0 auto;
+  background: #f7f9fc;
+  z-index: 100;
+  padding: 24px 20px;
+  overflow-y: auto;
+}
 .manage-header {
   display: flex;
   justify-content: space-between;

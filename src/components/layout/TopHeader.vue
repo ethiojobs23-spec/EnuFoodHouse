@@ -33,8 +33,12 @@ const handleLogout = async () => {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  max-width: 420px;
+  margin: 0 auto;
   z-index: 50;
 }
 .logo {

@@ -61,6 +61,8 @@ onUnmounted(() => {
 .drawer-content {
   background-color: #ffffff;
   width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 16px 24px 32px;
