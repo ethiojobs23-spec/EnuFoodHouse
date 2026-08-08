@@ -3,6 +3,7 @@ import { supabase } from '../services/supabase'
 import DashboardView from '../views/DashboardView.vue'
 import InventoryEntryView from '../views/InventoryEntryView.vue'
 import ExpenseEntryView from '../views/ExpenseEntryView.vue'
+import LogsView from '../views/LogsView.vue'
 import LoginView from '../views/LoginView.vue'
 
 const router = createRouter({
@@ -26,6 +27,12 @@ const router = createRouter({
       path: '/expenses', 
       name: 'expenses', 
       component: ExpenseEntryView,
+      meta: { requiresAuth: true }
+    },
+    { 
+      path: '/logs', 
+      name: 'logs', 
+      component: LogsView,
       meta: { requiresAuth: true }
     }
   ]
