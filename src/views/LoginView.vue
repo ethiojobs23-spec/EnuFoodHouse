@@ -37,7 +37,7 @@ const pin = ref('');
 const errorMessage = ref('');
 const loading = ref(false);
 
-const EXPECTED_PIN = import.meta.env.VITE_ADMIN_PIN || '123456';
+const EXPECTED_PIN = computed(() => localStorage.getItem('ADMIN_PIN') || import.meta.env.VITE_ADMIN_PIN || '123456');
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@enu.local';
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'EnuAdmin123!';
 
@@ -55,7 +55,7 @@ const backspace = () => {
 };
 
 const verifyPin = async () => {
-  if (pin.value !== EXPECTED_PIN) {
+  if (pin.value !== EXPECTED_PIN.value) {
     errorMessage.value = 'Incorrect PIN';
     pin.value = '';
     return;

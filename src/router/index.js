@@ -4,6 +4,7 @@ import DashboardView from '../views/DashboardView.vue'
 import InventoryEntryView from '../views/InventoryEntryView.vue'
 import ExpenseEntryView from '../views/ExpenseEntryView.vue'
 import LogsView from '../views/LogsView.vue'
+import ProfileView from '../views/ProfileView.vue'
 import LoginView from '../views/LoginView.vue'
 
 const router = createRouter({
@@ -33,6 +34,12 @@ const router = createRouter({
       path: '/logs', 
       name: 'logs', 
       component: LogsView,
+      meta: { requiresAuth: true }
+    },
+    { 
+      path: '/profile', 
+      name: 'profile', 
+      component: ProfileView,
       meta: { requiresAuth: true }
     }
   ]
