@@ -12,9 +12,8 @@ CREATE TABLE public.inventory_transactions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     item_id UUID REFERENCES public.inventory_items(id) ON DELETE CASCADE,
     quantity NUMERIC(10, 2) NOT NULL,
-    -- NOTE: In order to use a generated column, price_point needs to be stored on this table as well.
-    -- This is actually best practice because prices change over time, and you want to record the price at the time of transaction.
     price_point NUMERIC(10, 2) NOT NULL,
+    transaction_type TEXT NOT NULL, -- e.g., 'IN' or 'OUT'
     total_value NUMERIC(10, 2) GENERATED ALWAYS AS (quantity * price_point) STORED, 
     user_id UUID REFERENCES auth.users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -24,6 +23,7 @@ CREATE TABLE public.inventory_transactions (
 CREATE TABLE public.expenses (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     description TEXT NOT NULL,
+    category TEXT NOT NULL, -- Added to support UI categories (Utilities, Salary, etc)
     amount NUMERIC(10, 2) NOT NULL,
     user_id UUID REFERENCES auth.users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -43,3 +43,10 @@ ON public.inventory_transactions FOR ALL TO authenticated USING (true);
 
 CREATE POLICY "Allow authenticated full access to expenses" 
 ON public.expenses FOR ALL TO authenticated USING (true);
+
+-- 6. Insert Starter Data (Optional but helps testing the UI immediately)
+INSERT INTO public.inventory_items (name, price_point, category) VALUES 
+('Tomato Paste (Large)', 15.50, 'Ingredients'),
+('Cooking Oil (5L)', 45.00, 'Ingredients'),
+('Flour (50kg)', 120.00, 'Ingredients'),
+('Coca Cola (Crate)', 25.00, 'Beverages');
