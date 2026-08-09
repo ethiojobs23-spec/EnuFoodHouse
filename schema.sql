@@ -3,6 +3,7 @@ CREATE TABLE public.inventory_items (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     price_point NUMERIC(10, 2) NOT NULL,
+    stock_quantity NUMERIC(10, 2) DEFAULT 0,
     category TEXT, -- e.g., 'Beverages', 'Ingredients'
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

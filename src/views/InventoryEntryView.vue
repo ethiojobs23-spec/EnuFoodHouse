@@ -20,7 +20,10 @@
       >
         <div class="item-info">
           <span class="item-name">{{ item.name }}</span>
-          <span class="item-category">{{ item.category || 'General' }}</span>
+          <div class="item-meta">
+            <span class="item-category">{{ item.category || 'General' }}</span>
+            <span class="stock-badge" :class="{'low-stock': (item.stock_quantity || 0) <= 5}">Stock: {{ item.stock_quantity || 0 }}</span>
+          </div>
         </div>
         <div class="item-price-action">
           <div class="item-price">
@@ -57,11 +60,18 @@
 
         <div class="input-group">
           <label>Price Point</label>
-          <!-- Virtual Input for Amount to avoid native keyboard -->
-          <div class="virtual-input" @click="isPriceDrawerOpen = true" :class="{'has-value': editingItem.price_point}">
-            <span v-if="editingItem.price_point" class="currency">ETB</span>
-            <span v-if="editingItem.price_point" class="value">{{ editingItem.price_point.toFixed(2) }}</span>
+          <div class="virtual-input" @click="isPriceDrawerOpen = true" :class="{'has-value': editingItem.price_point !== null}">
+            <span v-if="editingItem.price_point !== null" class="currency">ETB</span>
+            <span v-if="editingItem.price_point !== null" class="value">{{ Number(editingItem.price_point).toFixed(2) }}</span>
             <span v-else class="placeholder">Tap to enter price</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Current Stock Quantity</label>
+          <div class="virtual-input" @click="isStockDrawerOpen = true" :class="{'has-value': editingItem.stock_quantity !== null}">
+            <span v-if="editingItem.stock_quantity !== null" class="value">{{ editingItem.stock_quantity }}</span>
+            <span v-else class="placeholder">Tap to enter stock</span>
           </div>
         </div>
 
@@ -87,6 +97,14 @@
         @save="handlePriceSave" 
       />
     </BottomSheetDrawer>
+
+    <!-- STOCK NUMPAD DRAWER (For editing stock) -->
+    <BottomSheetDrawer v-model:isOpen="isStockDrawerOpen">
+      <CustomNumpad 
+        item-name="Stock Quantity" 
+        @save="handleStockSave" 
+      />
+    </BottomSheetDrawer>
   </div>
 </template>
 
@@ -104,7 +122,8 @@ const inventoryItems = ref([]);
 // Manage Item State
 const isManageMode = ref(false);
 const isPriceDrawerOpen = ref(false);
-const editingItem = ref({ id: null, name: '', price_point: null, category: '' });
+const isStockDrawerOpen = ref(false);
+const editingItem = ref({ id: null, name: '', price_point: null, category: '', stock_quantity: null });
 
 const fetchInventory = async () => {
   const { data, error } = await supabase.from('inventory_items').select('*').order('name');
@@ -121,14 +140,20 @@ const openNumpad = (item) => {
 };
 
 const handleTransactionSave = async (quantity) => {
+  const currentStock = Number(selectedItem.value.stock_quantity || 0);
+  const newStock = Math.max(0, currentStock - Number(quantity));
+
   const { error } = await supabase.from('inventory_transactions').insert({
     item_id: selectedItem.value.id,
     quantity: quantity,
     price_point: selectedItem.value.price_point,
     transaction_type: 'OUT'
   });
+  
   if (!error) {
+    await supabase.from('inventory_items').update({ stock_quantity: newStock }).eq('id', selectedItem.value.id);
     alert(`Successfully recorded ${quantity} of ${selectedItem.value.name}`);
+    await fetchInventory(); // Refresh to show new stock
   }
   isDrawerOpen.value = false;
   selectedItem.value = null;
@@ -136,7 +161,7 @@ const handleTransactionSave = async (quantity) => {
 
 /* --- Manage Item Logic --- */
 const openAddItem = () => {
-  editingItem.value = { id: null, name: '', price_point: null, category: '' };
+  editingItem.value = { id: null, name: '', price_point: null, category: '', stock_quantity: null };
   isManageMode.value = true;
 };
 
@@ -154,15 +179,21 @@ const handlePriceSave = (amount) => {
   isPriceDrawerOpen.value = false;
 };
 
+const handleStockSave = (amount) => {
+  editingItem.value.stock_quantity = amount;
+  isStockDrawerOpen.value = false;
+};
+
 const isManageValid = computed(() => {
-  return editingItem.value.name.trim() !== '' && editingItem.value.price_point !== null;
+  return editingItem.value.name.trim() !== '' && editingItem.value.price_point !== null && editingItem.value.stock_quantity !== null;
 });
 
 const saveItem = async () => {
   const itemData = {
     name: editingItem.value.name,
     category: editingItem.value.category,
-    price_point: editingItem.value.price_point
+    price_point: editingItem.value.price_point,
+    stock_quantity: editingItem.value.stock_quantity
   };
 
   if (editingItem.value.id) {
@@ -251,12 +282,29 @@ h2 {
   font-size: 1.1rem;
   color: #111;
 }
+.item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .item-category {
   font-size: 0.8rem;
   color: #868e96;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600;
+}
+.stock-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+}
+.stock-badge.low-stock {
+  background: #fff0f0;
+  color: #ef4444;
 }
 .item-price-action {
   display: flex;
